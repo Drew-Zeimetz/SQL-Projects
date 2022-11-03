@@ -1,0 +1,25 @@
+
+
+To get a general understanding of the data I wrote the following query to preview the directors table:
+
+Query 1:
+SELECT *
+  FROM directors           
+ LIMIT 10;
+
+Result from query 1:
+name             |id  |gender|uid  |department|
+-----------------+----+------+-----+----------+
+James Cameron    |4762|     2| 2710|Directing |
+Gore Verbinski   |4763|     2| 1704|Directing |
+Sam Mendes       |4764|     2|   39|Directing |
+Christopher Nolan|4765|     2|  525|Directing |
+Andrew Stanton   |4766|     2|    7|Directing |
+Sam Raimi        |4767|     2| 7623|Directing |
+Byron Howard     |4768|     2|76595|Directing |
+Joss Whedon      |4769|     2|12891|Directing |
+David Yates      |4770|     2|11343|Directing |
+Zack Snyder      |4771|     2|15217|Directing |
+
+
+
