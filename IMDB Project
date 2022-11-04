@@ -1,4 +1,5 @@
-
+IMDB database
+Tables: Movies, Directors
 
 To get a general understanding of the data I wrote the following query to preview the directors table:
 
@@ -22,4 +23,225 @@ David Yates      |4770|     2|11343|Directing |
 Zack Snyder      |4771|     2|15217|Directing |
 
 
+
+I noticed that in the preview under the department column that the only value was “Directing.” To see if that was true I wrote a query to show me all rows without “Directing” in the department column (See below query). No results returned meaning that Directing is the only value in that column for all rows.
+
+Query 2:
+SELECT *
+  FROM directors 
+ WHERE department <> 'Directing';
+ 
+ Result from query 2:
+ name|id|gender|uid|department|
+(no rows returned)
+
+
+
+
+Next I wanted to preview some data in the movie table.
+
+Query 3:
+SELECT title,
+       budget,
+       release_date,
+       revenue,
+       vote_average,
+       director_id
+  FROM movies
+ LIMIT 10;
+ 
+ Result from Query 3:
+ title                                   |budget   |release_date|revenue   |vote_average|director_id|
+----------------------------------------+---------+------------+----------+------------+-----------+
+Avatar                                  |237000000|2009-12-10  |2787965087|         7.2|       4762|
+Pirates of the Caribbean: At World's End|300000000|2007-05-19  | 961000000|         6.9|       4763|
+Spectre                                 |245000000|2015-10-26  | 880674609|         6.3|       4764|
+The Dark Knight Rises                   |250000000|2012-07-16  |1084939099|         7.6|       4765|
+John Carter                             |260000000|2012-03-07  | 284139100|         6.1|       4766|
+Spider-Man 3                            |258000000|2007-05-01  | 890871626|         5.9|       4767|
+Tangled                                 |260000000|2010-11-24  | 591794936|         7.4|       4768|
+Avengers: Age of Ultron                 |280000000|2015-04-22  |1405403694|         7.3|       4769|
+Harry Potter and the Half-Blood Prince  |250000000|2009-07-07  | 933959197|         7.4|       4770|
+Batman v Superman: Dawn of Justice      |250000000|2016-03-23  | 873260194|         5.7|       4771|
+
+
+
+
+Next I wanted to now what were the top 10 movies in Revenue.
+
+Query 4:
+SELECT title,
+       release_date,
+       revenue
+  FROM movies
+ ORDER BY revenue desc
+ LIMIT 10;
+ 
+ Result from Query 4:
+ title                     |release_date|revenue   |
+--------------------------+------------+----------+
+Avatar                    |2009-12-10  |2787965087|
+Titanic                   |1997-11-18  |1845034188|
+The Avengers              |2012-04-25  |1519557910|
+Jurassic World            |2015-06-09  |1513528810|
+Furious 7                 |2015-04-01  |1506249360|
+Avengers: Age of Ultron   |2015-04-22  |1405403694|
+Frozen                    |2013-11-27  |1274219009|
+Iron Man 3                |2013-04-18  |1215439994|
+Minions                   |2015-06-17  |1156730962|
+Captain America: Civil War|2016-04-27  |1153304495|
+
+
+
+I wanted to see the Directors that directed the top 10 movies in revenue. Since the director names did not exist in the movies table, I used the keyword JOIN to join the tables together.
+
+Query 5:
+SELECT title,
+       name AS director,
+       revenue
+  FROM movies
+       LEFT JOIN directors 
+       ON movies.director_id = directors.id
+ ORDER BY revenue desc
+ LIMIT 10;
+ 
+ Result from Query 5:
+ title                     |director       |revenue   |
+--------------------------+---------------+----------+
+Avatar                    |James Cameron  |2787965087|
+Titanic                   |James Cameron  |1845034188|
+The Avengers              |Joss Whedon    |1519557910|
+Jurassic World            |Colin Trevorrow|1513528810|
+Furious 7                 |James Wan      |1506249360|
+Avengers: Age of Ultron   |Joss Whedon    |1405403694|
+Frozen                    |Chris Buck     |1274219009|
+Iron Man 3                |Shane Black    |1215439994|
+Minions                   |Kyle Balda     |1156730962|
+Captain America: Civil War|Anthony Russo  |1153304495|
+
+
+
+Next I wanted to aggregrate the data by Director and see which Directors had the most total revenue and also their avg revenue by movie.
+
+Query 6:
+SELECT 
+       name AS director,
+       sum(revenue) AS total_revenue_from_movies,
+       Round(avg(revenue), 2) AS avg_revenue_from_movies
+  FROM movies
+       LEFT JOIN directors 
+       ON movies.director_id = directors.id
+ GROUP BY director
+ ORDER BY total_revenue_from_movies desc
+ LIMIT 10;
+ 
+ Result From Query 6:
+ director         |total_revenue_from_movies|avg_revenue_from_movies|
+-----------------+-------------------------+-----------------------+
+Steven Spielberg |               9147393164|           338792339.41|
+Peter Jackson    |               6498642820|           722071424.44|
+James Cameron    |               5883569439|           840509919.86|
+Michael Bay      |               5832524638|           486043719.83|
+Christopher Nolan|               4227483234|           528435404.25|
+Chris Columbus   |               3725631503|              338693773|
+Robert Zemeckis  |               3590622002|           276201692.46|
+George Lucas     |               3339113893|            667822778.6|
+Tim Burton       |               3337418241|           238387017.21|
+Ridley Scott     |               3189557997|           199347374.81|
+
+
+
+
+Next, I wanted to compare the Harry Potter series with the Pirates of the Caribbean series by ranking them by the IMDB review score:
+
+Query 7:
+SELECT title,
+       revenue, 
+       budget,
+       vote_average,
+       name AS director
+  FROM movies
+       LEFT JOIN directors 
+       ON movies.director_id = directors.id
+ WHERE title LIKE '%Harry Potter%'
+       OR title LIKE '%Pirates of %'
+ ORDER BY vote_average desc
+ LIMIT 10;
+ 
+ Result from Query 7:
+ title                                                 |revenue   |budget   |vote_average|director      |
+------------------------------------------------------+----------+---------+------------+--------------+
+Harry Potter and the Prisoner of Azkaban              | 789804554|130000000|         7.7|Alfonso Cuarón|
+Harry Potter and the Goblet of Fire                   | 895921036|150000000|         7.5|Mike Newell   |
+Harry Potter and the Philosopher's Stone              | 976475550|125000000|         7.5|Chris Columbus|
+Pirates of the Caribbean: The Curse of the Black Pearl| 655011224|140000000|         7.5|Gore Verbinski|
+Harry Potter and the Half-Blood Prince                | 933959197|250000000|         7.4|David Yates   |
+Harry Potter and the Order of the Phoenix             | 938212738|150000000|         7.4|David Yates   |
+Harry Potter and the Chamber of Secrets               | 876688482|100000000|         7.4|Chris Columbus|
+Pirates of the Caribbean: Dead Man's Chest            |1065659812|200000000|         7.0|Gore Verbinski|
+Pirates of the Caribbean: At World's End              | 961000000|300000000|         6.9|Gore Verbinski|
+Pirates of the Caribbean: On Stranger Tides           |1045713802|380000000|         6.4|Rob Marshall  |
+
+
+
+I wanted to investigate which movies generated the most "profit". Assuming the budget is a good estimate of the movies expense. I used the revenue and expense to calculate "profit" and a "profite margin" and ordered results by the profit.
+
+Query 8:
+SELECT title,
+       revenue, 
+       budget AS expense,
+       revenue - budget AS profit,
+       ROUND((revenue - budget)*100.0/revenue, 1) AS profit_margin,
+       name AS director
+  FROM movies
+       LEFT JOIN directors 
+       ON movies.director_id = directors.id
+ ORDER BY profit desc
+ LIMIT 10;
+ 
+ Result from Query 8:
+ title                                        |revenue   |expense  |profit    |profit_margin|director       |
+---------------------------------------------+----------+---------+----------+-------------+---------------+
+Avatar                                       |2787965087|237000000|2550965087|         91.5|James Cameron  |
+Titanic                                      |1845034188|200000000|1645034188|         89.2|James Cameron  |
+Jurassic World                               |1513528810|150000000|1363528810|         90.1|Colin Trevorrow|
+Furious 7                                    |1506249360|190000000|1316249360|         87.4|James Wan      |
+The Avengers                                 |1519557910|220000000|1299557910|         85.5|Joss Whedon    |
+Avengers: Age of Ultron                      |1405403694|280000000|1125403694|         80.1|Joss Whedon    |
+Frozen                                       |1274219009|150000000|1124219009|         88.2|Chris Buck     |
+Minions                                      |1156730962| 74000000|1082730962|         93.6|Kyle Balda     |
+The Lord of the Rings: The Return of the King|1118888979| 94000000|1024888979|         91.6|Peter Jackson  |
+Iron Man 3                                   |1215439994|200000000|1015439994|         83.5|Shane Black    |
+
+
+
+Next I wanted to see which directors had the highest avg imdb score across their movies given that they directed at least 10 movies.
+
+Query 9:
+SELECT name AS director,
+       ROUND(avg(vote_average), 1) AS avg_imdb_score_of_movies_directed, 
+       MAX(vote_average) AS highest_imdb_score_of_movies_directed,
+       MIN(vote_average) AS lowest_imdb_score_of_movies_directed
+  FROM movies
+       LEFT JOIN directors 
+       ON movies.director_id = directors.id 
+ Group BY director 
+       HAVING count(title) >=10
+ ORDER BY avg_imdb_score_of_movies_directed desc
+LIMIT 10;
+
+
+Result from query 9:
+director            |avg_imdb_score_of_movies_directed|highest_imdb_score_of_movies_directed|lowest_imdb_score_of_movies_directed
+--------------------+---------------------------------+-------------------------------------+------------------------------------
+Martin Scorsese     |                              7.3|                                  8.2|                                 6.1
+David Fincher       |                              7.3|                                  8.3|                                 6.2
+Steven Spielberg    |                              7.0|                                  8.3|                                 5.6
+Richard Linklater   |                              7.0|                                  7.7|                                 5.9
+Francis Ford Coppola|                              7.0|                                  8.4|                                 5.0
+Robert Zemeckis     |                              6.9|                                  8.2|                                 5.5
+Clint Eastwood      |                              6.9|                                  7.8|                                 5.5
+Joel Coen           |                              6.8|                                  7.8|                                 5.7
+Woody Allen         |                              6.7|                                  7.8|                                 5.6
+Tim Burton          |                              6.7|                                  7.6|                                 5.6
 
