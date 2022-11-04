@@ -245,3 +245,58 @@ Joel Coen           |                              6.8|                         
 Woody Allen         |                              6.7|                                  7.8|                                 5.6
 Tim Burton          |                              6.7|                                  7.6|                                 5.6
 
+
+
+
+Next I wanted to use subqueries to generate a list of names of people who directed in the Halloween franchise.
+
+Query 10:
+SELECT name AS director_of_movie_from_Halloween_franchise
+  FROM directors
+ WHERE id IN 
+       (SELECT director_id 
+        FROM movies 
+       WHERE title LIKE 'Halloween%')
+  ORDER BY director_of_movie_from_Halloween_franchise;
+  
+  
+  Result from query 10:
+  director_of_movie_from_Halloween_franchise|
+------------------------------------------+
+Dominique Othenin-Girard                  |
+Dwight H. Little                          |
+Joe Chappelle                             |
+John Carpenter                            |
+Rick Rosenthal                            |
+Rob Zombie                                |
+Tommy Lee Wallace                         |
+
+
+
+Next I wanted to be able to but the movies into categories base on popularity.
+
+Query 11:
+SELECT title,
+       CASE WHEN popularity > 200 THEN 'Very Popular'
+       WHEN popularity BETWEEN 100 AND 200 THEN 'Somewhat Popular'
+       WHEN popularity BETWEEN 50 AND 99 THEN 'Less Popular'
+       WHEN popularity BETWEEN 1 AND 49 THEN 'Not Well Known'
+       ELSE 'Unknown' END AS popularity_category
+  FROM movies
+  LIMIT 10;
+  
+  Result from Query 11:
+  title                                   |popularity_category|
+----------------------------------------+-------------------+
+Avatar                                  |Somewhat Popular   |
+Pirates of the Caribbean: At World's End|Somewhat Popular   |
+Spectre                                 |Somewhat Popular   |
+The Dark Knight Rises                   |Somewhat Popular   |
+John Carter                             |Not Well Known     |
+Spider-Man 3                            |Somewhat Popular   |
+Tangled                                 |Not Well Known     |
+Avengers: Age of Ultron                 |Somewhat Popular   |
+Harry Potter and the Half-Blood Prince  |Less Popular       |
+Batman v Superman: Dawn of Justice      |Somewhat Popular   |
+
+
