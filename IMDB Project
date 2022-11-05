@@ -300,3 +300,33 @@ Harry Potter and the Half-Blood Prince  |Less Popular       |
 Batman v Superman: Dawn of Justice      |Somewhat Popular   |
 
 
+
+I wanted to see how many directors had movies that directed movies with over 100,000,000 dollars in revenue and out of the films directed what percentage of them made at least 100,000,000 in revenue.
+
+Query 12:
+SELECT name AS director,
+       count(CASE WHEN revenue >= 100000000 THEN title END) AS num_of_movies_directed_with_at_least_hundred_million_revenue,
+       ROUND(avg(CASE WHEN revenue >= 100000000 THEN 1 ELSE 0 END)*100.0, 1) AS percent_of_movies_directed_with_at_least_hundred_million_revenue
+  FROM movies
+       LEFT JOIN directors 
+       ON movies.director_id = directors.id
+ GROUP BY director
+ ORDER BY num_of_movies_directed_with_at_least_hundred_million_revenue desc
+ LIMIT 10;
+ 
+ 
+ Result from query 12:
+ director         |num_of_movies_directed_with_at_least_hundred_million_revenue|percent_of_movies_directed_with_at_least_hundred_million_revenue|
+-----------------+------------------------------------------------------------+----------------------------------------------------------------+
+Steven Spielberg |                                                          24|                                                            88.9|
+Robert Zemeckis  |                                                          12|                                                            92.3|
+Ridley Scott     |                                                          10|                                                            62.5|
+Michael Bay      |                                                          10|                                                            83.3|
+Clint Eastwood   |                                                          10|                                                            50.0|
+Tony Scott       |                                                           9|                                                            75.0|
+Tim Burton       |                                                           9|                                                            64.3|
+David Fincher    |                                                           9|                                                            90.0|
+Martin Scorsese  |                                                           8|                                                            40.0|
+Steven Soderbergh|                                                           7|                                                            46.7|
+
+
